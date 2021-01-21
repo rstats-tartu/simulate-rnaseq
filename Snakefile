@@ -2,10 +2,31 @@
 # Number of samples
 N = 10
 N_GROUPS = 2
+CONTRASTS = {"group1-vs-group2": ["1", "2"]}
 SAMPLES = [ f'sample_{"{:0>2}".format(i)}' for i in list(range(1, N_GROUPS * N + 1, 1))]
 
 rule all:
-    input: "output/counts.tsv", expand("output/salmon/{sample}/quant.sf", sample = SAMPLES)
+    input: 
+        "output/counts.tsv", 
+        expand("output/salmon/{sample}/quant.sf", sample = SAMPLES),
+        expand(
+            [
+                "output/diffexp/{contrast}.diffexp.tsv",
+                "output/diffexp/{contrast}.ma-plot.svg",
+            ],
+            contrast=CONTRASTS,
+        )
+
+def get_deseq2_threads(wildcards=None):
+    # https://twitter.com/mikelove/status/918770188568363008
+    few_coeffs = False if wildcards is None else len(get_contrast(wildcards)) < 10
+    return 1 if len(SAMPLES) < 100 or few_coeffs else 6
+
+def get_contrast(wildcards):
+    return CONTRASTS[wildcards.contrast]
+
+
+report: "report/workflow.rst"
 
 
 rule transcripts:
@@ -27,6 +48,7 @@ rule simulate_reads:
     output:
         transcripts_sample="output/transcripts_sample.fa",
         simulated_reads=expand("output/simulated_reads/{sample}_{pair}.fasta", sample = SAMPLES, pair = [1, 2]),
+        samples="output/simulated_reads/sim_rep_info.txt"
     log:
         "logs/simulate_reads.log",
     params:
@@ -57,7 +79,7 @@ rule shuffle:
     conda:
        "envs/bbmap.yaml"
     resources:
-       mem_mb = 4000,
+       mem_mb = 16000,
        runtime = 120,
     shell:
        """
@@ -126,4 +148,37 @@ rule count_matrix:
         runtime=120
     script:
         "scripts/count-matrix.py"
+
+
+rule deseq2_init:
+    input:
+        counts="output/counts.tsv",
+        samples="output/simulated_reads/sim_rep_info.txt",
+    output:
+        "output/deseq2.rds",
+    conda:
+        "envs/deseq2.yaml"
+    log:
+        "logs/deseq2/init.log",
+    threads: get_deseq2_threads()
+    script:
+        "scripts/deseq2-init.R"
+
+rule deseq2:
+    input:
+        "output/deseq2.rds",
+    output:
+        table=report(
+            "output/diffexp/{contrast}.diffexp.tsv", "report/diffexp.rst"
+        ),
+        ma_plot=report("output/diffexp/{contrast}.ma-plot.svg", "report/ma.rst"),
+    params:
+        contrast=get_contrast,
+    conda:
+        "envs/deseq2.yaml"
+    log:
+        "logs/{contrast}.diffexp.log",
+    threads: get_deseq2_threads
+    script:
+        "scripts/deseq2.R"
 
