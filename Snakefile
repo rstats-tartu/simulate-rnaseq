@@ -53,18 +53,19 @@ rule simulate_reads:
         "logs/simulate_reads.log",
     params:
         n_transcripts = 20000,
-        seed = [11, 12, 13],
+        n_groups = N_GROUPS, 
+        n_reps = N,
         fold_change_values=[0.5, 1, 2],
-        n_samples = N_GROUPS * N,
-        probs = [0.0025, 0.995, 0.0025],
+        fold_change_probs = [0.0025, 0.995, 0.0025],
         coverage = 20,
+        seed = [11, 12, 13],
     conda:
         "envs/polyester.yaml"
     resources:
        mem_mb = 4000,
        runtime = 120,
     script:
-       "scripts/simulate_reads.R"
+       "scripts/simulate-reads.R"
 
 
 rule shuffle:
