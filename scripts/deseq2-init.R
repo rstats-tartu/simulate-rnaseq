@@ -15,8 +15,9 @@ if (snakemake@threads > 1) {
 # by the way we create the count matrix
 cts <- read.table(snakemake@input[["counts"]], header=TRUE, row.names="gene", check.names=FALSE)
 coldata <- read.table(snakemake@input[["samples"]], header=TRUE, row.names="rep_id", check.names=FALSE)
+coldata$group <- as.factor(coldata$group)
 
-dds <- DESeqDataSetFromMatrix(countData=cts,
+dds <- DESeqDataSetFromMatrix(countData=round(cts),
                               colData=coldata,
                               design=~ group)
 

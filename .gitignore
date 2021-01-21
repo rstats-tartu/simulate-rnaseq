@@ -1,4 +1,5 @@
 slurm*
 output/
 logs/
+data/
 .snakemake/

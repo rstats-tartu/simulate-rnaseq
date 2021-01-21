@@ -1,14 +1,14 @@
+from snakemake.utils import validate, min_version
+min_version("5.1.2")
 
 # Number of samples
-N = 10
+N = config["N"]
 N_GROUPS = 2
 CONTRASTS = {"group1-vs-group2": ["1", "2"]}
 SAMPLES = [ f'sample_{"{:0>2}".format(i)}' for i in list(range(1, N_GROUPS * N + 1, 1))]
 
 rule all:
     input: 
-        "output/counts.tsv", 
-        expand("output/salmon/{sample}/quant.sf", sample = SAMPLES),
         expand(
             [
                 "output/diffexp/{contrast}.diffexp.tsv",
@@ -31,31 +31,31 @@ report: "report/workflow.rst"
 
 rule transcripts:
      output:
-         "output/gencode.v36.pc_transcripts.fa",
+         "data/gencode.v36.pc_transcripts.fa",
      log:
          "logs/transcripts.log"
      shell:
          """
          (wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.pc_transcripts.fa.gz \
          && mkdir -p output \
-         && mv gencode.v36.pc_transcripts.fa.gz output \
+         && mv gencode.v36.pc_transcripts.fa.gz data \
          && gunzip gencode.v36.pc_transcripts.fa.gz) 2> {log}
          """
 
 rule simulate_reads:
     input:
-        transcripts="output/gencode.v36.pc_transcripts.fa",
+        transcripts=rules.transcripts.output[0],
     output:
         transcripts_sample="output/transcripts_sample.fa",
         simulated_reads=expand("output/simulated_reads/{sample}_{pair}.fasta", sample = SAMPLES, pair = [1, 2]),
-        samples="output/simulated_reads/sim_rep_info.txt"
+        samples="output/simulated_reads/sim_rep_info.txt",
     log:
         "logs/simulate_reads.log",
     params:
         n_transcripts = 20000,
         seed = [11, 12, 13],
         fold_change_values=[0.5, 1, 2],
-        n_groups = N_GROUPS,
+        n_samples = N_GROUPS * N,
         probs = [0.0025, 0.995, 0.0025],
         coverage = 20,
     conda:
@@ -89,7 +89,7 @@ rule shuffle:
 
 rule salmon_index:
     input:
-        "output/fasta_sample.fa"
+        rules.simulate_reads.output.transcripts_sample
     output:
         directory("output/salmon/index")
     log:
@@ -161,6 +161,9 @@ rule deseq2_init:
     log:
         "logs/deseq2/init.log",
     threads: get_deseq2_threads()
+    resources:
+        mem_mb=4000,
+        runtime=120
     script:
         "scripts/deseq2-init.R"
 
@@ -179,6 +182,9 @@ rule deseq2:
     log:
         "logs/{contrast}.diffexp.log",
     threads: get_deseq2_threads
+    resources:
+        mem_mb=4000,
+        runtime=120
     script:
         "scripts/deseq2.R"
 
