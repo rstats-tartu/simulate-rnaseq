@@ -1,0 +1,8 @@
+name: simulaternaseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - snakemake >=5.1.2
+  - snakemake-wrapper-utils
+  - biopython
