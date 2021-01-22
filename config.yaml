@@ -11,6 +11,8 @@ fold_changes:
   seed: 12
 
 simulate_experiment:
+  effects: [0.5, 1, 2]
+  probs: [0.05, 0.9, 0.05]
   seed: 13
 
 contrasts:

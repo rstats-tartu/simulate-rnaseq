@@ -94,8 +94,8 @@ rule simulate_experiment:
             input.fasta, 20
         ),
         fold_changes=fold_changes(
-            [0.5, 1, 2],
-            prob=[0.05, 0.9, 0.05],
+            config["simulate_experiment"]["effects"],
+            prob=config["simulate_experiment"]["probs"],
             n_groups=N_GROUPS,
             n_transcripts=N_TX,
             seed=config["fold_changes"]["seed"],
