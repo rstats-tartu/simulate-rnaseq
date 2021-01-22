@@ -9,11 +9,27 @@ performs DE-analysis using **DESeq2** R package <https://bioconductor.org/packag
 Human protein coding transcript sequences are downloaded from <https://www.gencodegenes.org/human/>. 
 Transcript sequences can be customised by directly editing Snakefile.
 
+# Install
+
+To install clone this repository and install dependencies (assumes that [conda/miniconda](https://docs.conda.io/en/latest/miniconda.html) is already installed):
+
+```bash
+conda env create -f environment.yml
+```
+
+This command creates conda environment called "simulaternaseq".
+
 
 # Running
 
+Activate conda environment:
+```bash
+conda activate simulaternaseq
+```
+
 For test run replace "-j" flag with "-n":
 ```bash
+
 snakemake -j --use-conda
 ```
 
