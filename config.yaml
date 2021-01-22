@@ -1,0 +1,19 @@
+
+n_groups: 2
+replicates: 3
+
+# number of transcripts to sample
+n_transcripts:
+  n: 1000
+  seed: 11
+
+fold_changes:
+  seed: 12
+
+simulate_experiment:
+  seed: 13
+
+contrasts:
+  group1-vs-group2:
+    - 1
+    - 2
