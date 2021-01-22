@@ -3,11 +3,31 @@
 Simple workflow to simulate RNA-seq reads and perform DE-analysis.
 
 
-Workflow simulates RNA-seq reads using **Polyester** R package <https://github.com/alyssafrazee/polyester> and 
+Workflow simulates RNA-seq reads using **Polyester** R package <https://github.com/alyssafrazee/polyester>, quantifies expression with **Salmon** <https://combine-lab.github.io/salmon/> and 
 performs DE-analysis using **DESeq2** R package <https://bioconductor.org/packages/release/bioc/html/DESeq2.html>.
 
 Human protein coding transcript sequences are downloaded from <https://www.gencodegenes.org/human/>. 
 Transcript sequences can be customised by directly editing Snakefile.
+
+
+# Running
+
+For test run replace "-j" flag with "-n":
+```bash
+snakemake -j --use-conda
+```
+
+
+To generate snakemake run report:
+```bash
+snakemake --report output/report.html
+```
+
+
+# Some outputs of interest
+
+File `output/diffexp/group1-vs-group2.diffexp.tsv` contains differential expression results, which can be compared to ground truth in `output/simulated_reads/sim_tx_info.txt`.
+
 
 # Acknowledgements
 
