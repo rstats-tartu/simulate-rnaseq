@@ -40,7 +40,7 @@ simulate_experiment(
   reads_per_transcript = readspertx,
   fold_changes = fold_changes, 
   num_reps = rep(num_reps, n_groups),
-  outdir = dirname(snakemake@output[["simulated_reads"]],
+  outdir = dirname(snakemake@output[["simulated_reads"]])[1],
   transcriptid = tx_names,
   seed = snakemake@params[["seed"]][3]
 )
