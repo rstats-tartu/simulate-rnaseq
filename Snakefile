@@ -105,7 +105,7 @@ rule simulate_experiment:
         seed=config["simulate_experiment"]["seed"],
     resources:
         mem_mb=4000,
-        runtime=120,
+        runtime=lambda wildcards, params: 120 + params.num_reps * 10,
     wrapper:
         "file:wrappers/polyester"
 
