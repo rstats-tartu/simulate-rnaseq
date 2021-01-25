@@ -107,7 +107,7 @@ rule simulate_experiment:
         mem_mb=4000,
         runtime=lambda wildcards: 120 + N * N_GROUPS * 10,
     wrapper:
-        "file:../wrappers/polyester"
+        f"{WRAPPER_PREFIX}/master/polyester/simulate_experiment"
 
 
 rule shuffle:
