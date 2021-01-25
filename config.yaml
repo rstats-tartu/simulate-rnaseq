@@ -4,7 +4,7 @@ replicates: 3
 
 # number of transcripts to sample
 n_transcripts:
-  n: 1000
+  n: 20000
   seed: 11
 
 fold_changes:

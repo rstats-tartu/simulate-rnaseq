@@ -105,9 +105,9 @@ rule simulate_experiment:
         seed=config["simulate_experiment"]["seed"],
     resources:
         mem_mb=4000,
-        runtime=120,
+        runtime=lambda wildcards: 120 + N * N_GROUPS * 10,
     wrapper:
-        "file:wrappers/polyester"
+        "file:../wrappers/polyester"
 
 
 rule shuffle:
