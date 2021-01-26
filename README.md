@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4463804.svg)](https://doi.org/10.5281/zenodo.4463804)
+
 # simulate-rnaseq
 
 Simple workflow to simulate RNA-seq reads and perform DE-analysis.
